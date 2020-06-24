@@ -1,5 +1,6 @@
 import numpy as np
 
+from astropy.stats import SigmaClip
 from photutils import Background2D
 from photutils import detect_sources
 from photutils import deblend_sources
@@ -13,7 +14,8 @@ from astropy.convolution import Gaussian2DKernel
 def image_segmentation(data, npixels, r, sigma, threshold_value):
 
     bkg_estimator = MedianBackground()
-    bkg = Background2D(data, (50, 50), filter_size=(3, 3), bkg_estimator=bkg_estimator)
+    sigma_clip = SigmaClip(sigma=3.)
+    bkg = Background2D(data, (3, 3), filter_size=(10, 10), sigma_clip=sigma_clip, bkg_estimator=bkg_estimator)
     
     threshold = bkg.background + (threshold_value * bkg.background_rms)
     kernel = Gaussian2DKernel(sigma, x_size=2, y_size=2)

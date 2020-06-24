@@ -30,7 +30,7 @@ class Utils():
             ax.plot(geo_obj[0], geo_obj[1], ls='none', color='red', marker='+', ms=10, lw=1.5)
 
         for aperture in apertures:
-            aperture.plot(axes=ax, color='white', lw=1.5)
+            aperture.plot(axes=ax, color='blue', lw=1.5)
 
         plt.title('segmentations plot image: '+str(image)+' frame: '+str(frame)+' => n_pixels: '+str(npixels)+' threshold value: '+str(threshold_value))
         plt.savefig('./results/segmentations plot image: '+str(image)+' frame: '+str(frame)+' => threshold value: '+str(threshold_value)+'.png')
