@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 from astropy.stats import SigmaClip
 from photutils import Background2D
@@ -11,14 +12,14 @@ from photutils import EllipticalAperture
 import astropy.units as u
 from astropy.convolution import Gaussian2DKernel
 
-def image_segmentation(data, npixels, r, sigma, threshold_value):
+def image_segmentation(data, npixels, r, sigma, threshold_value, kernel_x_size, kernel_y_size, min_area, max_area, threshold_roundity):
 
     bkg_estimator = MedianBackground()
     sigma_clip = SigmaClip(sigma=3.)
     bkg = Background2D(data, (3, 3), filter_size=(10, 10), sigma_clip=sigma_clip, bkg_estimator=bkg_estimator)
     
     threshold = bkg.background + (threshold_value * bkg.background_rms)
-    kernel = Gaussian2DKernel(sigma, x_size=2, y_size=2)
+    kernel = Gaussian2DKernel(sigma, x_size=kernel_x_size, y_size=kernel_y_size)
     kernel.normalize()
     segm = detect_sources(data, threshold, npixels=npixels, filter_kernel=kernel, connectivity=4)
     segm_deblend = deblend_sources(data, segm, npixels=npixels, filter_kernel=kernel, nlevels=32, contrast=0.001)
@@ -30,7 +31,10 @@ def image_segmentation(data, npixels, r, sigma, threshold_value):
         a = obj.semimajor_axis_sigma.value * r
         b = obj.semiminor_axis_sigma.value * r
         theta = obj.orientation.to(u.rad).value
-        apertures.append(EllipticalAperture(position, a, b, theta=theta))
 
+        area = math.pi * a * b
+        roundity = b/a
+        if roundity >= threshold_roundity:
+            apertures.append(EllipticalAperture(position, a, b, theta=theta))
 
     return apertures
