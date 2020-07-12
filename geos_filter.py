@@ -12,9 +12,21 @@ class GEOs_filter():
         negative_samples = []
         # generate images for negative samples
         for sample in apertures:
-            image = self.get_image_from_coords(data, int(sample.positions[0]), int(sample.positions[1]))
-            if len(image) != 0:
-                negative_samples.append(image)
+
+            is_positive_sample = False
+            # check if it is a possible sample
+            for positive_sample in geo_objects:
+                if abs(positive_sample[0]-sample.positions[0]) < self.pixels_from_center and abs(positive_sample[1] - sample.positions[1]) < self.pixels_from_center:
+                    
+                    print('Image with x:', sample.positions[0], 'and y:', sample.positions[1], 'discarded for positive proximity!!')
+                    is_positive_sample = True
+                    break
+
+            if not is_positive_sample:
+
+                image = self.get_image_from_coords(data, int(sample.positions[0]), int(sample.positions[1]))
+                if len(image) != 0:
+                    negative_samples.append(image)
 
         positive_samples = []
         # generate images for positives samples
