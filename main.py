@@ -71,7 +71,7 @@ for image in range(initial_image, (last_image+1)):
         apertures = image_segmentation(data, npixels, r, sigma, threshold_value, kernel_x_size, kernel_y_size, min_area, max_area, threshold_roundity)
 
         if mode == 'training':
-            geos_filter.train(data, apertures, geo_objects)
+            geos_filter.generate_train_dataset(data, apertures, geo_objects, image, frame)
 
         else:
             # geos_filter => from all detected objects, select just the geos (using a convolutional neural network)
